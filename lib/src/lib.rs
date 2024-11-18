@@ -3,6 +3,7 @@ pub mod sha256;
 pub mod types;
 pub mod utils;
 pub mod error;
+pub mod network;
 
 use serde::{Deserialize, Serialize};
 use uint::construct_uint;
@@ -19,6 +20,12 @@ pub const HALVING_INTERVAL: u64 = 210;
 // ideal block time in seconds
 pub const IDEAL_BLOCK_TIME: u64 = 10;
 // minimum target
+// pub const MIN_TARGET: U256 = U256([
+//                                       0xFFFF_FFFF_FFFF_FFFF,
+//                                       0xFFFF_FFFF_FFFF_FFFF,
+//                                       0xFFFF_FFFF_FFFF_FFFF,
+//                                       0x0000_FFFF_FFFF_FFFF,
+// ]);
 pub const MIN_TARGET: U256 = U256([
                                       0xFFFF_FFFF_FFFF_FFFF,
                                       0xFFFF_FFFF_FFFF_FFFF,
