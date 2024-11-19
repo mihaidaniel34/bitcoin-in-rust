@@ -24,3 +24,4 @@ pub enum BtcError {
     InvalidPrivateKey,
 }
 
+pub type Result<T> = std::result::Result<T, BtcError>;

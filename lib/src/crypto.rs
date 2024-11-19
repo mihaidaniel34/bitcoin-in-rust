@@ -24,7 +24,7 @@ impl Signature {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Ord, PartialOrd)]
 pub struct PublicKey(pub VerifyingKey<Secp256k1>);
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

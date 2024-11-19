@@ -38,7 +38,7 @@ struct Cli {
 struct Miner {
     public_key: PublicKey,
     stream: Mutex<TcpStream>,
-    current_template: Arc<Mutex<Option<Block>>>,
+    current_template: Arc<std::sync::Mutex<Option<Block>>>,
     mining: Arc<AtomicBool>,
     mined_block_sender: flume::Sender<Block>,
     mined_block_receiver: flume::Receiver<Block>,
@@ -55,7 +55,7 @@ impl Miner {
         Ok(Self{
             public_key,
             stream: Mutex::new(stream),
-            current_template: Arc::new(Mutex::new(None)),
+            current_template: Arc::new(std::sync::Mutex::new(None)),
             mining: Arc::new(AtomicBool::new(false)),
             mined_block_sender,
             mined_block_receiver,
@@ -86,7 +86,7 @@ impl Miner {
         thread::spawn(move || loop {
             if mining.load(Ordering::Relaxed) {
                 if let Some(mut block) =
-                    template.blocking_lock().clone()
+                    template.lock().unwrap().clone()
                 {
                     println!(
                         "Mining block with target: {}",
@@ -127,7 +127,7 @@ impl Miner {
             Message::Template(template) => {
                 drop(stream_lock);
                 println!("Received new template with target: {}", template.header.target);
-                *self.current_template.blocking_lock() = Some(template);
+                *self.current_template.lock().unwrap() = Some(template);
                 self.mining.store(true, Ordering::Relaxed);
                 Ok(())
             }
@@ -135,7 +135,7 @@ impl Miner {
         }
     }
     async fn validate_template(&self) -> Result<()> {
-        if let Some(template) = self.current_template.blocking_lock().clone() {
+        if let Some(template) = self.current_template.lock().unwrap().clone() {
             let message = Message::ValidateTemplate(template);
             let mut stream_lock = self.stream.lock().await;
             message.send_async(&mut *stream_lock).await?;
@@ -163,7 +163,7 @@ impl Miner {
         let message = Message::SubmitTemplate(block);
         let mut stream_lock = self.stream.lock().await;
         message.send_async(&mut *stream_lock).await?;
-        self.mining.store(true, Ordering::Relaxed);
+        self.mining.store(false, Ordering::Relaxed);
         Ok(())
     }
 }

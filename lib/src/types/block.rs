@@ -85,6 +85,7 @@ impl Block {
         let miner_fees = self.calculate_miner_fees(utxos)?;
         let block_reward = crate::INITIAL_REWARD * 10u64.pow(8)
             / 2u64.pow((predicted_block_height / crate::HALVING_INTERVAL) as u32);
+        
         let total_coinbase_outputs: u64 = coinbase_transaction
             .outputs
             .iter()
@@ -97,7 +98,7 @@ impl Block {
         Ok(())
     }
 
-    pub fn calculate_miner_fees(
+    pub fn calculate_miner_fees (
         &self,
         utxos: &HashMap<Hash, (bool, TransactionOutput)>,
     ) -> crate::types::Result<u64> {
